@@ -1,28 +1,32 @@
 import mongoose from "mongoose";
 
-const QuestionSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true
+const QuestionSchema = new mongoose.Schema(
+  {
+    question: {
+      type: String,
+      required: true,
     },
-    content: {
-        type: String,
-        required: true
+    description: {
+      type: String,
+      required: true,
     },
-    media:{
-        type: [String],
-        required: false
+    images: {
+      type: [{ url: String, publicId: String }],
+      required: false,
     },
-    author: {
-        type: String,
-        required: true
+    videos: {
+      type: [{ url: String, publicId: String }],
+      required: false,  
     },
-    anonymousName: {
-        type: String,
-        default: "anonymous"
-    }
-},{timestamps:true})
+    authorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+  },
+  { timestamps: true },
+);
 
-const Question = mongoose.model.Question || mongoose.model("Question", QuestionSchema);
+const Question = mongoose.model("Question", QuestionSchema);
 
 export default Question;

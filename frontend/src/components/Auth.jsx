@@ -37,8 +37,8 @@ const AuthPage = () => {
   };
 
   const generateRandomName = () => {
-    const adjectives = ['Mystic', 'Silent', 'Brave', 'Witty', 'Cosmic', 'Gentle', 'Fierce', 'Lunar'];
-    const nouns = ['Phoenix', 'Wolf', 'Owl', 'Dragon', 'Traveler', 'Dreamer', 'Guardian', 'Explorer'];
+    const adjectives = ['Sweet', 'Soft', 'Pink', 'Tiny', 'Honey', 'Sugar', 'Pastel', 'Sparkly'];
+    const nouns = ['Bunny', 'Kitten', 'Angel', 'Blossom', 'Cupcake', 'Star', 'Peach', 'Berry'];
     const randomAdj = adjectives[Math.floor(Math.random() * adjectives.length)];
     const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
     const randomNum = Math.floor(Math.random() * 999) + 1;

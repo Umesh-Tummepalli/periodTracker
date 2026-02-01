@@ -1,13 +1,13 @@
 import jwt from "jsonwebtoken";
-import Session from "../models/Session";
-export function UserAuth(req,res,next){
+import Session from "../models/Session.js";
+export async function UserAuth(req,res,next){
     const token = req.cookies.token;
     if(!token){
         return res.status(401).json({ message: "Unauthorized", success: false });
     }
    try{
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    const session = await Session.findOne({ token });
+    const session = await Session.findOne({ token:decodedToken.token });
     if(!session){
         return res.status(401).json({ message: "Unauthorized", success: false });
     }

@@ -30,6 +30,12 @@ app.use('/user', userRoutes);
 app.use('/quora', quoraRoutes);
 app.use('/tracker', trackerRoutes);
 
+
+//404 handler
+app.use((req, res) => {
+    res.status(404).json({ message: "Route Not Found", success: false });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

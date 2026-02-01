@@ -1,1 +1,13 @@
 @import "tailwindcss";
+
+/* Override Toast UI Editor Font Size */
+.toastui-editor-contents,
+.toastui-editor-defaultUI {
+  font-family: inherit; /* Use the app's font */
+  font-size: 1.125rem !important; /* text-lg = 18px */
+}
+
+.toastui-editor-contents p,
+.toastui-editor-contents li {
+  font-size: 1.125rem !important;
+}
