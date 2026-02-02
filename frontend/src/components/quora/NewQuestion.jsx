@@ -96,7 +96,7 @@ const NewQuestion = () => {
         </div>
 
         {/* Rich Description Component */}
-        <DescriptionWithMedia ref={descRef} initialMarkdown="Explain your problem in detail"/>
+        <DescriptionWithMedia ref={descRef} initialMarkdown=""/>
       </div>
     </div>
   );

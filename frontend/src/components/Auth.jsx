@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 import { User, Mail, Lock, Eye, EyeOff, Calendar, Sparkles, LogIn, UserPlus } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
 const AuthPage = () => {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+  const location = useLocation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -109,7 +109,7 @@ const AuthPage = () => {
           withCredentials:true
         });
         if(res.data.success){
-            navigate('/tracker');
+          navigate(location.state?.from || '/');
           toast.success(res.data.message);
         }
         else{

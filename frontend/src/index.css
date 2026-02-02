@@ -11,3 +11,14 @@
 .toastui-editor-contents li {
   font-size: 1.125rem !important;
 }
+
+/* TinyMCE Tweaks */
+.tox-tinymce {
+  border: 1px solid #fecdd3 !important; /* rose-200 */
+  border-radius: 1rem !important;
+}
+
+.tox-tinymce:focus-within {
+  border-color: #fb7185 !important; /* rose-400 */
+  box-shadow: 0 0 0 4px #ffe4e6 !important; /* rose-100 ring */
+}

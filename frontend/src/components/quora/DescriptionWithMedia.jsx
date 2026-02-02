@@ -4,41 +4,60 @@ import React, {
   useImperativeHandle,
   useState,
   useEffect,
-  useCallback
 } from "react";
-import { Editor } from "@toast-ui/react-editor";
-import "@toast-ui/editor/dist/toastui-editor.css";
 
-import { UploadCloud, X, Video } from "lucide-react";
+import { Editor } from "@tinymce/tinymce-react";
+import TurndownService from "turndown";
+import { marked } from "marked";
+import { UploadCloud, X } from "lucide-react";
 
 const DescriptionWithMedia = forwardRef(({ initialMarkdown = "" }, ref) => {
-  const editorRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // We store objects: { file: File, id: string, preview: string, type: 'image' | 'video' }
+  // Initialize Turndown for HTML → Markdown
+  const turndownService = useRef(
+    new TurndownService({
+      headingStyle: "atx",
+      codeBlockStyle: "fenced",
+      bulletListMarker: "-",
+    })
+  );
+
+  // HTML content for TinyMCE (convert initial markdown to HTML)
+  const [htmlContent, setHtmlContent] = useState(() => {
+    return initialMarkdown ? marked.parse(initialMarkdown) : "";
+  });
+
+  // Media
   const [mediaItems, setMediaItems] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
 
-  // Cleanup object URLs to avoid memory leaks
+  // Keep track of media items for cleanup
+  const mediaItemsRef = useRef(mediaItems);
+
+  useEffect(() => {
+    mediaItemsRef.current = mediaItems;
+  }, [mediaItems]);
+
+  // Cleanup previews on unmount
   useEffect(() => {
     return () => {
-      mediaItems.forEach((item) => URL.revokeObjectURL(item.preview));
+      mediaItemsRef.current.forEach((item) => URL.revokeObjectURL(item.preview));
     };
-  }, []); // Run on unmount
+  }, []);
 
-  // 🔹 Helper: Process new files
+  // File handling
   const processFiles = (fileList) => {
     const newItems = Array.from(fileList).map((file) => ({
       file,
-      id: Math.random().toString(36).substr(2, 9),
+      id: crypto.randomUUID(),
       preview: URL.createObjectURL(file),
       type: file.type.startsWith("video") ? "video" : "image",
     }));
-
     setMediaItems((prev) => [...prev, ...newItems]);
   };
 
-  // 🔹 Drag & Drop Handlers
+  // Drag & drop
   const handleDragOver = (e) => {
     e.preventDefault();
     setIsDragging(true);
@@ -50,67 +69,59 @@ const DescriptionWithMedia = forwardRef(({ initialMarkdown = "" }, ref) => {
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+    if (e.dataTransfer.files?.length) {
       processFiles(e.dataTransfer.files);
-      e.dataTransfer.clearData();
     }
   };
 
-  // 🔹 Manual Select
+  // Manual select
   const handleFileSelect = (e) => {
-    if (e.target.files && e.target.files.length > 0) {
+    if (e.target.files?.length) {
       processFiles(e.target.files);
     }
-    // reset input so same file can be selected again if deleted
     e.target.value = null;
   };
 
-  // 🔹 Remove Media
-  const removeMedia = (idToRemove) => {
+  // Remove media
+  const removeMedia = (id) => {
     setMediaItems((prev) => {
-      const target = prev.find((item) => item.id === idToRemove);
-      if (target) URL.revokeObjectURL(target.preview); // Cleanup
-      return prev.filter((item) => item.id !== idToRemove);
+      const target = prev.find((m) => m.id === id);
+      if (target) URL.revokeObjectURL(target.preview);
+      return prev.filter((m) => m.id !== id);
     });
   };
 
+  // Expose API
   useImperativeHandle(ref, () => ({
     fetchData() {
-      // Separate images and videos for the return object
-      const images = mediaItems.filter(m => m.type === 'image').map(m => m.file);
-      const videos = mediaItems.filter(m => m.type === 'video').map(m => m.file);
+      // Convert HTML to Markdown using Turndown
+      const markdown = turndownService.current.turndown(htmlContent);
 
       return {
-        markdown: editorRef.current?.getInstance().getMarkdown() || "",
-        images,
-        videos
+        markdown,
+        images: mediaItems.filter((m) => m.type === "image").map((m) => m.file),
+        videos: mediaItems.filter((m) => m.type === "video").map((m) => m.file),
       };
     },
     setData({ markdown }) {
-      editorRef.current?.getInstance().setMarkdown(markdown || "");
-    }
+      // Convert markdown to HTML using marked
+      const html = markdown ? marked.parse(markdown) : "";
+      setHtmlContent(html);
+    },
   }));
 
-  // Preload initial markdown
-  useEffect(() => {
-    if (initialMarkdown) {
-      editorRef.current?.getInstance().setMarkdown(initialMarkdown);
-    }
-  }, [initialMarkdown]);
-
   return (
-    <div className="space-y-6 rounded-3xl border border-rose-100 bg-gradient-to-br from-white via-rose-50/50 to-rose-100/30 p-6 shadow-xl shadow-rose-200/40 transition-all duration-300">
-
-      {/* 1. Drag & Drop Zone */}
+    <div className="space-y-6 rounded-3xl border border-rose-100 bg-white p-6 shadow-xl">
+      {/* Upload */}
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
-        className={`group relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-300 cursor-pointer
+        className={`flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center cursor-pointer transition
           ${isDragging
             ? "border-rose-500 bg-rose-100/50"
-            : "border-rose-200 bg-white/60 hover:border-rose-400 hover:bg-rose-50"
+            : "border-rose-200 hover:border-rose-400"
           }`}
       >
         <input
@@ -121,79 +132,85 @@ const DescriptionWithMedia = forwardRef(({ initialMarkdown = "" }, ref) => {
           onChange={handleFileSelect}
           className="hidden"
         />
-        <div className="flex flex-col items-center pointer-events-none">
-          <UploadCloud className="w-8 h-8 text-rose-400 mb-2" />
-          <p className="text-sm font-medium text-gray-700">
-            <span className="text-rose-600">Click to upload</span> or drag and drop
-          </p>
-          <p className="mt-1 text-xs text-gray-500">
-            Images (JPG, PNG) or Videos (MP4)
-          </p>
-        </div>
+        <UploadCloud className="w-8 h-8 text-rose-400 mb-2" />
+        <p className="text-sm">
+          <span className="text-rose-600">Click to upload</span> or drag & drop
+        </p>
+        <p className="text-xs text-gray-500">Images or Videos</p>
       </div>
 
-      {/* 2. Media Preview Grid */}
+      {/* Media preview */}
       {mediaItems.length > 0 && (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {mediaItems.map((item) => (
             <div
               key={item.id}
-              className="relative group overflow-hidden rounded-xl border border-rose-100 bg-white shadow-sm aspect-square"
+              className="relative group aspect-square rounded-xl border bg-white"
             >
-              {/* Remove Button */}
               <button
                 onClick={() => removeMedia(item.id)}
-                className="absolute right-1 top-1 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-rose-500/90 text-white opacity-0 shadow-sm backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:bg-rose-600"
+                className="absolute top-1 right-1 z-10 h-6 w-6 rounded-full bg-rose-500 text-white opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                <X className="w-4 h-4 text-white" />
+                <X className="w-4 h-4 mx-auto" />
               </button>
 
-              {/* Preview Content */}
-              <div className="flex h-full w-full items-center justify-center p-2">
-                {item.type === "video" ? (
-                  <div className="relative h-full w-full">
-                    <video
-                      src={item.preview}
-                      className="h-full w-full rounded-lg object-contain bg-black/5"
-                      controls
-                    />
-                    <div className="absolute top-2 left-2 p-1 bg-white/80 rounded-md pointer-events-none">
-                      <Video className="w-5 h-5 text-rose-500" />
-                    </div>
-                  </div>
-                ) : (
-                  <img
-                    src={item.preview}
-                    alt="preview"
-                    className="h-full w-full rounded-lg object-contain"
-                  />
-                )}
-              </div>
+              {item.type === "video" ? (
+                <video
+                  src={item.preview}
+                  controls
+                  className="h-full w-full object-contain rounded-xl"
+                />
+              ) : (
+                <img
+                  src={item.preview}
+                  alt="Preview"
+                  className="h-full w-full object-contain rounded-xl"
+                />
+              )}
             </div>
           ))}
         </div>
       )}
 
-      {/* 3. Editor */}
-      <div className="overflow-hidden rounded-2xl border border-rose-200 shadow-sm text-lg">
+      {/* TinyMCE Editor */}
+      <div className="">
         <Editor
-          ref={editorRef}
-          width="100%"
-          height="auto"
-          initialEditType="wysiwyg"
-          previewStyle="vertical"
-          hideModeSwitch
-          usageStatistics={false}
-          toolbarItems={[
-            ['heading', 'bold', 'italic', 'strike'],
-            ['hr', 'quote'],
-            ['ul', 'ol'],
-            ['link'],
-          ]}
+
+          value={htmlContent}
+          onEditorChange={setHtmlContent}
+          apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+          init={{
+            height: 300,
+            menubar: false,
+            plugins: [
+              "advlist",
+              "autolink",
+              "lists",
+              "link",
+              "charmap",
+              "anchor",
+              "searchreplace",
+              "visualblocks",
+              "code",
+              "fullscreen",
+              "insertdatetime",
+              "table",
+              "help",
+              "wordcount",
+            ],
+            toolbar:
+              "undo redo | blocks | bold italic underline strikethrough | " +
+              "bullist numlist | blockquote | link | removeformat | code",
+            branding: false,
+            statusbar: false,
+            content_style: "body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; font-size: 14px; }",
+          }}
         />
       </div>
     </div>
   );
 });
+
+DescriptionWithMedia.displayName = "DescriptionWithMedia";
 
 export default DescriptionWithMedia;

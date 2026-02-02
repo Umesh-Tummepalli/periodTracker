@@ -14,7 +14,18 @@ async function fetchAnonymousNames(userIds){
     const names=users.map(user=>user.anonymousName);
     return names;   
 }
+import fs from 'fs/promises';
 
+async function cleanFiles(files) {
+    for (const file of files) {
+        try {
+            await fs.access(file.path);
+            await fs.unlink(file.path);
+        } catch (error) {
+            // File does not exist or cannot be accessed
+        }
+    }
+}
 router.post('/', UserAuth, upload.fields([{
     name: "images", maxCount: 10
 }, {
@@ -33,6 +44,8 @@ router.post('/', UserAuth, upload.fields([{
             });
             imgs.push({ url: uploadData.secure_url, publicId: uploadData.public_id });
         }catch(error){
+            await cleanFiles(images);
+            await cleanFiles(videos);
             cloudinaryDelete(imgs.map(img => img.publicId), vids.map(video => video.publicId));
             console.log("Image upload error:", error);
             return res.status(500).json({ message: "Image upload error", success: false });
@@ -45,6 +58,8 @@ router.post('/', UserAuth, upload.fields([{
             });
             vids.push({ url: uploadData.secure_url, publicId: uploadData.public_id });
         }catch(error){
+            await cleanFiles(images);
+            await cleanFiles(videos);
             cloudinaryDelete(imgs.map(img => img.publicId), vids.map(video => video.publicId));
             console.log("Video upload error:", error);
             return res.status(500).json({ message: "Video upload error", success: false });
@@ -61,6 +76,10 @@ router.post('/', UserAuth, upload.fields([{
         cloudinaryDelete(imgs.map(img => img.publicId), vids.map(video => video.publicId));
         console.log("Question save error:", error);
         return res.status(500).json({ message: "Question save error", success: false });
+    }
+    finally{
+        await cleanFiles(images);
+        await cleanFiles(videos);
     }
     res.status(200).json({ message: "Question posted successfully", success: true,questionId:questionData._id });
 });
@@ -103,14 +122,17 @@ router.get('/:questionId', UserAuth, async (req, res) => {
         const question = await Question.findById(questionId);
         const userIds=[question.authorId];
         const names=await fetchAnonymousNames(userIds);
-        question.anonymousName=names[0];
-        question.authorId=undefined;
-        res.status(200).json({ message: "Question fetched successfully", success: true, question });
+        const temp=JSON.parse(JSON.stringify(question));
+        temp.anonymousName=names[0];
+        temp.authorId=undefined;
+        res.status(200).json({ message: "Question fetched successfully", success: true, question:temp });
     }catch(error){
         console.log("Question fetch error:", error);
         return res.status(500).json({ message: "Question fetch error", success: false });
     }
 });
+
+router.use('/:questionId/comments',comments);
 
 router.get('/feed', UserAuth, async (req, res) => {
     const start = parseInt(req.query.start) || 0;
@@ -127,5 +149,4 @@ router.get('/feed', UserAuth, async (req, res) => {
         return res.status(500).json({ message: "Question fetch error", success: false });
     }
 });
-router.use('/comments',comments);
 export default router;
