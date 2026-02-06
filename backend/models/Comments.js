@@ -1,27 +1,32 @@
 import mongoose from "mongoose";
 
 const CommentSchema = new mongoose.Schema({
-    content: {
+    comment: {
         type: String,
         required: true
     },
-    media:{
-        type: [String],
-        required: false
+     images: {
+      type: [{ url: String, publicId: String }],
+      required: false,
+    },
+    videos: {
+      type: [{ url: String, publicId: String }],
+      required: false,  
     },
     authorId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
     },
-    anonymousName: {
-        type: String,
-        default: "anonymous"
-    },
     questionId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Question",
         required: true
+    },
+    parentCommentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment",
+        required: false
     },
 },{timestamps:true})
 

@@ -108,6 +108,13 @@ const DescriptionWithMedia = forwardRef(({ initialMarkdown = "" }, ref) => {
       const html = markdown ? marked.parse(markdown) : "";
       setHtmlContent(html);
     },
+    reset() {
+      setHtmlContent("");
+      setMediaItems([]);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    },
   }));
 
   return (

@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { User, Clock, MessageCircle, Share } from 'lucide-react';
 import { marked } from 'marked';
+import Comments from './Comments';
 
 const Question = () => {
   const { id } = useParams();
@@ -41,7 +42,6 @@ const Question = () => {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-rose-50/30 py-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -97,9 +97,9 @@ const Question = () => {
           <div className="px-8 sm:px-10 pb-10 ">
             {/* Description */}
             {question?.description && (
-              <div className="prose prose-lg prose-rose max-w-none mb-10">
+              <div className="max-w-none mb-10">
                 <div
-                  className="text-gray-600 leading-relaxed font-normal"
+                  className="text-gray-600 leading-relaxed prose prose-rose max-w-none"
                   dangerouslySetInnerHTML={{
                     __html: marked.parse(question.description)
                   }}
@@ -147,7 +147,7 @@ const Question = () => {
 
         {/* Answers Section - Minimal Placeholder */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-10">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Answers</h2>
+          <Comments questionId={id} />
           <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
             <MessageCircle className="w-10 h-10 text-gray-300 mb-3" />
             <p className="max-w-xs mx-auto">
