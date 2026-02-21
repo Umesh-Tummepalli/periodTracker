@@ -15,11 +15,20 @@
 
 /* TinyMCE Tweaks */
 .tox-tinymce {
-  border: 1px solid #fecdd3 !important; /* rose-200 */
+  border: 1px solid #f9a8d4 !important; /* pink-300 */
   border-radius: 1rem !important;
 }
 
 .tox-tinymce:focus-within {
-  border-color: #fb7185 !important; /* rose-400 */
-  box-shadow: 0 0 0 4px #ffe4e6 !important; /* rose-100 ring */
+  border-color: #e91e63 !important;
+  box-shadow: 0 0 0 4px #fce7f3 !important; /* pink-100 ring */
+}
+
+body{
+  background-image: url("/image copy.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-color: #fce7f3;
 }

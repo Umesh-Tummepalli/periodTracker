@@ -10,7 +10,7 @@ const Question = () => {
   const { id } = useParams();
   const [question, setQuestion] = useState({});
   const [loading, setLoading] = useState(true);
-  const [reload,setReload] = useState(false);
+  const [reload, setReload] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -32,127 +32,124 @@ const Question = () => {
       }
     };
     fetchQuestion();
-  }, [id, navigate, location.pathname,reload]);
+  }, [id, navigate, location.pathname, reload]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-white flex items-center justify-center">
-        <div className="animate-pulse">
-          <div className="h-12 w-12 rounded-full border-4 border-rose-200 border-t-rose-500 animate-spin"></div>
-        </div>
+      <div className="flex items-center justify-center py-20">
+        <div className="h-12 w-12 rounded-full border-4 border-pink-200 border-t-[#E91E63] animate-spin"></div>
       </div>
     );
   }
   return (
-    <div className="min-h-screen bg-rose-50/30 py-12 px-4 sm:px-6 lg:px-8 font-sans">
-      <div className="max-w-4xl mx-auto space-y-8">
-        {/* Main Question Card */}
-        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-rose-100/50 overflow-hidden">
+    <div className="space-y-6">
+      {/* Main Question Card */}
+      <div className="bg-white rounded-2xl shadow-lg shadow-pink-100/40 border border-pink-100/50 overflow-hidden">
 
-          {/* Header Section */}
-          <div className="p-8 sm:p-10 pb-0">
-            <div className="flex justify-between">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center border border-rose-100">
-                    <User className="w-5 h-5 text-rose-500" />
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-gray-900 font-semibold text-lg">
-                    {question?.anonymousName || 'Anonymous User'}
-                  </h3>
-                  <div className="flex items-center gap-2 text-gray-500 text-sm">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>
-                      {question?.createdAt
-                        ? new Date(question.createdAt).toLocaleDateString('en-US', {
-                          month: 'long',
-                          day: 'numeric',
-                          year: 'numeric'
-                        })
-                        : 'Recently'}
-                    </span>
-                  </div>
+        {/* Header Section */}
+        <div className="p-8 sm:p-10 pb-0">
+          <div className="flex justify-between">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="shrink-0">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#E91E63] to-pink-400 flex items-center justify-center shadow-md">
+                  <User className="w-5 h-5 text-white" />
                 </div>
               </div>
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  toast.success("Link copied to clipboard!");
-                }}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                title="Share"
-              >
-                <Share className="w-5 h-5 text-gray-500" />
-              </button>
+              <div>
+                <h3 className="text-gray-900 font-semibold text-lg">
+                  {question?.anonymousName || 'Anonymous User'}
+                </h3>
+                <div className="flex items-center gap-2 text-gray-500 text-sm">
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>
+                    {question?.createdAt
+                      ? new Date(question.createdAt).toLocaleDateString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })
+                      : 'Recently'}
+                  </span>
+                </div>
+              </div>
             </div>
-
-            {/* Question Title */}
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight tracking-tight mb-6">
-              {question?.question}
-            </h1>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                toast.success("Link copied to clipboard!");
+              }}
+              className="p-2 hover:bg-pink-50 rounded-full transition-colors"
+              title="Share"
+            >
+              <Share className="w-5 h-5 text-gray-500 hover:text-[#E91E63]" />
+            </button>
           </div>
 
-          {/* Content Section */}
-          <div className="px-8 sm:px-10 pb-10 ">
-            {/* Description */}
-            {question?.description && (
-              <div className="max-w-none mb-10">
-                <div
-                  className="text-gray-600 leading-relaxed prose prose-rose max-w-none"
-                  dangerouslySetInnerHTML={{
-                    __html: marked.parse(question.description)
-                  }}
-                />
+          {/* Question Title */}
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight tracking-tight mb-6">
+            {question?.question}
+          </h1>
+        </div>
+
+        {/* Content Section */}
+        <div className="px-8 sm:px-10 pb-10 ">
+          {/* Description */}
+          {question?.description && (
+            <div className="max-w-none mb-10">
+              <div
+                className="text-gray-600 leading-relaxed prose prose-pink max-w-none"
+                dangerouslySetInnerHTML={{
+                  __html: marked.parse(question.description)
+                }}
+              />
+            </div>
+          )}
+
+          <div className="mb-10">
+            {((question?.images?.length > 0) || (question?.videos?.length > 0)) && (
+              <div className="flex gap-6 overflow-x-auto scrollbar-thin scrollbar-thumb-pink-200 scrollbar-track-transparent px-2 snap-x snap-mandatory">
+
+                {question?.images?.map((img, index) => (
+                  <div
+                    key={`img-${index}`}
+                    className="snap-center flex-shrink-0 h-[420px] aspect-[4/5] rounded-2xl overflow-hidden bg-black"
+                  >
+                    <img
+                      src={img.url}
+                      alt={`Question attachment ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+
+                {question?.videos?.map((vid, index) => (
+                  <div
+                    key={`vid-${index}`}
+                    className="snap-center flex-shrink-0 h-[420px] aspect-video rounded-2xl overflow-hidden bg-black max-w-[420px] flex items-center justify-center"
+                  >
+                    <video
+                      src={vid.url}
+                      controls
+                      className="h-full w-auto object-cover"
+                    />
+                  </div>
+                ))}
+
               </div>
             )}
-
-            <div className="mb-10">
-              {((question?.images?.length > 0) || (question?.videos?.length > 0)) && (
-                <div className="flex gap-6 overflow-x-auto scrollbar-thin scrollbar-thumb-rose-200 scrollbar-track-transparent px-2 snap-x snap-mandatory">
-
-                  {question?.images?.map((img, index) => (
-                    <div
-                      key={`img-${index}`}
-                      className="snap-center flex-shrink-0 h-[420px] aspect-[4/5] rounded-2xl overflow-hidden bg-black"
-                    >
-                      <img
-                        src={img.url}
-                        alt={`Question attachment ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
-
-                  {question?.videos?.map((vid, index) => (
-                    <div
-                      key={`vid-${index}`}
-                      className="snap-center flex-shrink-0 h-[420px] aspect-video rounded-2xl overflow-hidden bg-black max-w-[420px] flex items-center justify-center"
-                    >
-                      <video
-                        src={vid.url}
-                        controls
-                        className="h-full w-auto object-cover"
-                      />
-                    </div>
-                  ))}
-
-                </div>
-              )}
-            </div>
-
-
           </div>
-        </div>
 
-        {/* Answers Section - Minimal Placeholder */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-10">
-         <ReplyComponent questionId={id} commentId={null} setReload={setReload}/>
+
         </div>
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-10">
-          <Comments questionId={id} />
-        </div>
+      </div>
+
+      {/* Comment Form */}
+      <div className="bg-white rounded-2xl shadow-lg shadow-pink-100/40 border border-pink-100/50 p-8 sm:p-10">
+        <ReplyComponent questionId={id} commentId={null} setReload={setReload} />
+      </div>
+      {/* Comments Section */}
+      <div className="bg-white rounded-2xl shadow-lg shadow-pink-100/40 border border-pink-100/50 p-8 sm:p-10">
+        <Comments questionId={id} />
       </div>
     </div>
   );

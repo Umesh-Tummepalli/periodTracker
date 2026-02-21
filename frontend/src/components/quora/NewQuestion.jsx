@@ -1,9 +1,9 @@
 import React, { useRef, useState } from "react";
 import DescriptionWithMedia from "./DescriptionWithMedia";
 import { toast } from "react-toastify";
-import { Send , Loader2} from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
 import axios from 'axios'
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 const NewQuestion = () => {
   const descRef = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -12,7 +12,7 @@ const NewQuestion = () => {
   const handleSubmit = async () => {
     // 1. Get Data from Child
     const data = descRef.current.fetchData();
-    if(!question){
+    if (!question) {
       toast.error("Please enter your question.");
       return;
     }
@@ -27,29 +27,29 @@ const NewQuestion = () => {
 
       // Append all images
       data.images.forEach((img) => formData.append("images", img));
-      
+
       // Append all videos
       data.videos.forEach((vid) => formData.append("videos", vid));
 
-      try{
+      try {
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/quora/`, formData, {
           withCredentials: true,
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
-        if(response.data.success){
-            toast.success("Question posted successfully");
-            navigate(`/quora/${response.data.questionId}`);  
+        if (response.data.success) {
+          toast.success("Question posted successfully");
+          navigate(`/quora/${response.data.questionId}`);
         }
-        else{
-            toast.error("Upload failed Try again later ");
+        else {
+          toast.error("Upload failed Try again later ");
         }
-      }catch(error){
+      } catch (error) {
         console.error("Upload failed", error);
-        toast.error("Upload failed Try again later "+error.response.data.message);
+        toast.error("Upload failed Try again later " + error.response.data.message);
       }
-      
+
     } catch (error) {
       console.error("Upload failed", error);
       toast.error("Upload failed Try again later ");
@@ -59,25 +59,25 @@ const NewQuestion = () => {
   };
 
   return (
-    <div className="min-h-screen bg-rose-50/30 px-4 py-10">
-         {/* Submit Action */}
+    <div className="px-4 py-10 bg-white rounded-2xl shadow-xlz">
+      {/* Submit Action */}
       <div className="mx-auto max-w-4xl space-y-6">
         <div className="flex justify-end">
           <button
             onClick={handleSubmit}
             disabled={loading}
             className={`
-              flex items-center rounded-xl px-8 py-3 font-semibold text-white shadow-lg shadow-rose-500/30 transition-all
-              ${loading 
-                ? "cursor-not-allowed bg-rose-300" 
-                : "bg-gradient-to-r from-rose-500 to-rose-600 hover:scale-105 hover:shadow-rose-500/40 active:scale-95"
+              flex items-center rounded-xl px-8 py-3 font-semibold text-white shadow-lg shadow-pink-500/30 transition-all
+              ${loading
+                ? "cursor-not-allowed bg-pink-300"
+                : "bg-linear-to-r from-[#E91E63] to-pink-500 hover:scale-105 hover:shadow-pink-500/40 active:scale-95"
               }
             `}
           >
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send />}
           </button>
         </div>
-        
+
         {/* Header Section */}
         <div className="space-y-2">
           <h1 className="text-3xl font-bold text-gray-800">Ask a Question</h1>
@@ -85,7 +85,7 @@ const NewQuestion = () => {
         </div>
 
         {/* Question Title Input */}
-        <div className="rounded-2xl border border-rose-100 bg-white p-2 shadow-lg shadow-rose-200/20 focus-within:ring-2 focus-within:ring-rose-500/20 transition-all">
+        <div className="rounded-2xl border border-pink-100 bg-white p-2 shadow-lg shadow-pink-200/20 focus-within:ring-2 focus-within:ring-pink-500/20 transition-all">
           <input
             type="text"
             placeholder="What's your question?"
@@ -96,7 +96,7 @@ const NewQuestion = () => {
         </div>
 
         {/* Rich Description Component */}
-        <DescriptionWithMedia ref={descRef} initialMarkdown=""/>
+        <DescriptionWithMedia ref={descRef} initialMarkdown="" />
       </div>
     </div>
   );

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
 import axios from 'axios';
 import DescriptionWithMedia from './DescriptionWithMedia';
-import { Reply,MessageCircle } from 'lucide-react'
+import { Reply, MessageCircle } from 'lucide-react'
 import { toast } from 'react-toastify';
-const ReplyComponent = ({ commentId, questionId,setReload }) => {
+const ReplyComponent = ({ commentId, questionId, setReload }) => {
   const replyRef = useRef(null);
   const [loading, setLoading] = useState(false);
-  const [reply,setReply] = useState(false);
+  const [reply, setReply] = useState(false);
   const handleSubmit = async () => {
     if (loading) return;
     const data = replyRef.current.fetchData();
@@ -52,16 +52,16 @@ const ReplyComponent = ({ commentId, questionId,setReload }) => {
     <div>
       <div className="">
         <button className="text-gray-500 hover:text-gray-700 text-sm mt-2 flex items-center gap-2"
-        onClick={() => setReply(!reply)}
+          onClick={() => setReply(!reply)}
         >
-           {commentId ? 
-           <>
-           <Reply /> Reply 
-           </> 
-           : 
-           <h2 className="text-lg font-semibold flex items-center gap-2 text-black">
-           <MessageCircle /> Comment
-           </h2>}
+          {commentId ?
+            <>
+              <Reply /> Reply
+            </>
+            :
+            <h2 className="text-lg font-semibold flex items-center gap-2 text-black">
+              <MessageCircle /> Comment
+            </h2>}
         </button>
       </div>
       {reply && <DescriptionWithMedia ref={replyRef} />}
@@ -70,7 +70,7 @@ const ReplyComponent = ({ commentId, questionId,setReload }) => {
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="bg-rose-500 text-white px-4 py-2 rounded-lg hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-[#E91E63] text-white px-4 py-2 rounded-lg hover:bg-[#C2185B] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? "Adding..." : commentId ? "Add Reply" : "Add Comment"}
           </button>

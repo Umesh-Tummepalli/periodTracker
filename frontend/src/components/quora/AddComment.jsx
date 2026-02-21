@@ -51,7 +51,7 @@ const AddComment = ({ questionId, parentCommentId = null }) => {
     return (
         <>
             <DescriptionWithMedia ref={descRef} initialMarkdown="" />
-            <button onClick={handleSubmit} className={`cursor-pointer m-3 bg-rose-500 text-white px-4 py-2 rounded-xl ${loading ? "opacity-50 cursor-not-allowed " : ""}`}>{loading ? <Loader className="animate-spin" /> : "Add"}</button>
+            <button onClick={handleSubmit} className={`cursor-pointer m-3 bg-[#E91E63] text-white px-4 py-2 rounded-xl hover:bg-[#C2185B] transition-colors ${loading ? "opacity-50 cursor-not-allowed " : ""}`}>{loading ? <Loader className="animate-spin" /> : "Add"}</button>
         </>
     )
 }

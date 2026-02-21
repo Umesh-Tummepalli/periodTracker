@@ -118,7 +118,7 @@ const DescriptionWithMedia = forwardRef(({ initialMarkdown = "" }, ref) => {
   }));
 
   return (
-    <div className="space-y-6 rounded-3xl border border-rose-100 bg-white p-6 shadow-xl">
+    <div className="space-y-6 rounded-3xl border border-pink-100 bg-white p-6 shadow-xl">
       {/* Upload */}
       <div
         onDragOver={handleDragOver}
@@ -127,8 +127,8 @@ const DescriptionWithMedia = forwardRef(({ initialMarkdown = "" }, ref) => {
         onClick={() => fileInputRef.current?.click()}
         className={`flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center cursor-pointer transition
           ${isDragging
-            ? "border-rose-500 bg-rose-100/50"
-            : "border-rose-200 hover:border-rose-400"
+            ? "border-[#E91E63] bg-pink-100/50"
+            : "border-pink-200 hover:border-pink-400"
           }`}
       >
         <input
@@ -139,9 +139,9 @@ const DescriptionWithMedia = forwardRef(({ initialMarkdown = "" }, ref) => {
           onChange={handleFileSelect}
           className="hidden"
         />
-        <UploadCloud className="w-8 h-8 text-rose-400 mb-2" />
+        <UploadCloud className="w-8 h-8 text-pink-400 mb-2" />
         <p className="text-sm">
-          <span className="text-rose-600">Click to upload</span> or drag & drop
+          <span className="text-[#E91E63]">Click to upload</span> or drag & drop
         </p>
         <p className="text-xs text-gray-500">Images or Videos</p>
       </div>
@@ -156,7 +156,7 @@ const DescriptionWithMedia = forwardRef(({ initialMarkdown = "" }, ref) => {
             >
               <button
                 onClick={() => removeMedia(item.id)}
-                className="absolute top-1 right-1 z-10 h-6 w-6 rounded-full bg-rose-500 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-1 right-1 z-10 h-6 w-6 rounded-full bg-[#E91E63] text-white opacity-0 group-hover:opacity-100 transition-opacity"
               >
                 <X className="w-4 h-4 mx-auto" />
               </button>
