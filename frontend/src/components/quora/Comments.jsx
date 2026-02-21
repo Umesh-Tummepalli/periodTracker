@@ -1,19 +1,23 @@
-import React,{useState,useEffect,useRef} from 'react'
+import React,{useState,useEffect} from 'react'
 import axios from 'axios';
-import AddComment from './AddComment';
-import CommentComponent from './CommentComponent';
+import { toast } from 'react-toastify';
+import { useNavigate, useLocation } from 'react-router-dom';
+import CommentComp from './CommentComp';
 const Comments = ({questionId}) => {
-  const [commentIds,setCommentIds] = useState([]);
+  const [comments,setComments] = useState([]);
   const [loading,setLoading] = useState(true);
+  const [reload,setReload] = useState(false);
   const [error,setError] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
   useEffect(() => {
     const fetchComments = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/quora/${questionId}/comments/`,{
           withCredentials: true
         });
-        setCommentIds(response.data.commentIds);
-        console.log(response.data.commentIds);
+        setComments(response.data.comments);
+        console.log(response.data.comments);
       } catch (error) {
         if(error.response?.status === 401){
           toast.error("You are not authorized to access this page");
@@ -26,19 +30,15 @@ const Comments = ({questionId}) => {
       }
     };
     fetchComments();
-  }, [questionId]);
-    
-    
-   
+  }, [questionId,reload]);
   return (
-    <>
-        <AddComment questionId={questionId} />
-        <div>
-            {commentIds.map((commentId) => (
-                <CommentComponent key={commentId} questionId={questionId} commentId={commentId} parentCommentId={null} />
-            ))}
-        </div>
-    </>
+    <div>Comments:
+      {
+        comments.map((comment) => (
+          <CommentComp key={comment._id} comment={comment} questionId={questionId} setReload={setReload} />
+        ))
+      }
+    </div>
   )
 }
 

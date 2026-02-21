@@ -5,11 +5,12 @@ import { toast } from 'react-toastify';
 import { User, Clock, MessageCircle, Share } from 'lucide-react';
 import { marked } from 'marked';
 import Comments from './Comments';
-
+import ReplyComponent from './ReplyComponent';
 const Question = () => {
   const { id } = useParams();
   const [question, setQuestion] = useState({});
   const [loading, setLoading] = useState(true);
+  const [reload,setReload] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -31,7 +32,7 @@ const Question = () => {
       }
     };
     fetchQuestion();
-  }, [id, navigate, location.pathname]);
+  }, [id, navigate, location.pathname,reload]);
 
   if (loading) {
     return (
@@ -147,13 +148,10 @@ const Question = () => {
 
         {/* Answers Section - Minimal Placeholder */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-10">
+         <ReplyComponent questionId={id} commentId={null} setReload={setReload}/>
+        </div>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-10">
           <Comments questionId={id} />
-          <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
-            <MessageCircle className="w-10 h-10 text-gray-300 mb-3" />
-            <p className="max-w-xs mx-auto">
-              No answers yet. <br /> Be the first to share your knowledge!
-            </p>
-          </div>
         </div>
       </div>
     </div>
